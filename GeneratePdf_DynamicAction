@@ -1,0 +1,118 @@
+--In the generate pdf button create dynamic action
+--1st True Action code
+--Javascript Code
+
+// Import jsPDF from the global window object
+var { jsPDF } = window.jspdf;
+
+// Gather form values from page items
+var ename = $v('P267_NAME');
+var email = $v('P267_EMAIL');
+var phone = $v('P267_PHONE_NUMBER');
+
+// Function to generate and download the PDF
+function generatePDFWithImage(imgDataURL) {
+var doc = new jsPDF();
+// PAGE DIMENSIONS
+var pageWidth = doc.internal.pageSize.getWidth();
+// MAIN HEADING
+doc.setFont("helvetica", "bold");
+doc.setFontSize(24);
+doc.setTextColor(10,10,80);
+
+var mainTitle = "My Custom PDF Report";
+var textWidth = doc.getTextWidth(mainTitle);
+var xPos = (pageWidth - textWidth) / 2;
+var yPos = 18;
+
+doc.text(mainTitle, xPos, yPos);
+// SECTION BORDER
+var sectionX = 15,
+sectionY = 30,
+sectionW = 180,
+sectionH = 80;
+
+doc.setDrawColor(0,150,200);
+doc.setLineWidth(1);
+doc.rect(sectionX, sectionY, sectionW, sectionH);
+
+// SECTION TITLE
+doc.setFontSize(24);
+doc.setTextColor(40,40,120);
+doc.text("User Profile", sectionX + 5, sectionY + 12);
+
+
+// USER DETAILS
+var leftX = sectionX + 8;
+var valX = leftX + 35;
+var startY = sectionY + 25;
+var lineHeight = 14;
+
+doc.setFontSize(12);
+doc.setTextColor(0,102,204);
+doc.text("Name:", leftX, startY);
+doc.setTextColor(60,60,60);
+doc.text(ename, valX, startY);
+doc.setTextColor(0,102,204);
+doc.text("Email:", leftX, startY + lineHeight);
+doc.setTextColor(60,60,60);
+doc.text(email, valX, startY + lineHeight);
+doc.setTextColor(0,102,204);
+doc.text("Phone:", leftX, startY + 2 * lineHeight);
+doc.setTextColor(60,60,60);
+doc.text(phone, valX, startY + 2 * lineHeight);
+
+// PROFILE IMAGE
+var imgW = 50;
+var imgH = 50;
+var imgX = sectionX + sectionW - imgW - 10;
+var imgY = sectionY + 15;
+
+if(imgDataURL) {
+doc.setDrawColor(160,160,160);
+doc.rect(imgX - 2, imgY - 2, imgW + 4, imgH + 4);
+doc.addImage(imgDataURL, 'JPEG', imgX, imgY, imgW, imgH);
+} else {
+doc.setFontSize(11);
+doc.setTextColor(140,140,140);
+doc.text("No Profile Picture", imgX, imgY + imgH / 2);
+}
+
+// VERTICAL SEPARATOR
+var sepX = imgX - 13;
+doc.setDrawColor(200,220,255);
+doc.line(sepX, sectionY + 8, sepX, sectionY + sectionH - 8);
+
+// DOWNLOAD PDF
+doc.save("UserDetails.pdf");
+}
+
+// READ IMAGE FIRST (THIS PART MOVED OUTSIDE FUNCTION)
+var fileInput = document.getElementById('P267_PROFILE');
+
+if (fileInput && fileInput.files && fileInput.files[0]) {
+var reader = new FileReader();
+reader.onload = function(e) {
+generatePDFWithImage(e.target.result);
+};
+reader.readAsDataURL(fileInput.files[0]);
+} else {
+generatePDFWithImage(null);
+}
+
+
+--2nd True Action Code
+--Server side code
+
+declare
+  l_blob blob;
+begin
+  select blob_content
+  into l_blob
+  from apex_application_temp_files
+  where name = :P8_PROFILE;
+
+  INSERT INTO USER_PROFILE_DETAILS (USER_NAME, USER_EMAIL, USER_PHONE_NUMBER, USER_PROFILE)
+  VALUES (:P8_NAME, :P8_EMAIL_ID, :P8_PHONE_NUMBER, l_blob);
+
+end;
