@@ -2,19 +2,23 @@
 --1st True Action code
 --Javascript Code
 
+
+
 // Import jsPDF from the global window object
 var { jsPDF } = window.jspdf;
 
 // Gather form values from page items
-var ename = $v('P267_NAME');
-var email = $v('P267_EMAIL');
-var phone = $v('P267_PHONE_NUMBER');
+var ename = $v('P4_NAME');
+var email = $v('P4_EMAIL');
+var phone = $v('P4_PHONE_NUMBER');
 
 // Function to generate and download the PDF
 function generatePDFWithImage(imgDataURL) {
 var doc = new jsPDF();
+
 // PAGE DIMENSIONS
 var pageWidth = doc.internal.pageSize.getWidth();
+
 // MAIN HEADING
 doc.setFont("helvetica", "bold");
 doc.setFontSize(24);
@@ -24,13 +28,10 @@ var mainTitle = "My Custom PDF Report";
 var textWidth = doc.getTextWidth(mainTitle);
 var xPos = (pageWidth - textWidth) / 2;
 var yPos = 18;
-
 doc.text(mainTitle, xPos, yPos);
+
 // SECTION BORDER
-var sectionX = 15,
-sectionY = 30,
-sectionW = 180,
-sectionH = 80;
+var sectionX = 15,sectionY = 30,sectionW = 180,sectionH = 80;
 
 doc.setDrawColor(0,150,200);
 doc.setLineWidth(1);
@@ -40,7 +41,6 @@ doc.rect(sectionX, sectionY, sectionW, sectionH);
 doc.setFontSize(24);
 doc.setTextColor(40,40,120);
 doc.text("User Profile", sectionX + 5, sectionY + 12);
-
 
 // USER DETAILS
 var leftX = sectionX + 8;
@@ -53,10 +53,12 @@ doc.setTextColor(0,102,204);
 doc.text("Name:", leftX, startY);
 doc.setTextColor(60,60,60);
 doc.text(ename, valX, startY);
+
 doc.setTextColor(0,102,204);
 doc.text("Email:", leftX, startY + lineHeight);
 doc.setTextColor(60,60,60);
 doc.text(email, valX, startY + lineHeight);
+
 doc.setTextColor(0,102,204);
 doc.text("Phone:", leftX, startY + 2 * lineHeight);
 doc.setTextColor(60,60,60);
@@ -88,8 +90,7 @@ doc.save("UserDetails.pdf");
 }
 
 // READ IMAGE FIRST (THIS PART MOVED OUTSIDE FUNCTION)
-var fileInput = document.getElementById('P267_PROFILE');
-
+var fileInput = document.getElementById('P4_PROFILE_PIC');
 if (fileInput && fileInput.files && fileInput.files[0]) {
 var reader = new FileReader();
 reader.onload = function(e) {
