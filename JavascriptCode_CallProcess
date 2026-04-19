@@ -1,0 +1,6 @@
+--2nd True Action
+
+apex.page.submit({
+    request: 'SUBMIT',
+    validate: true
+});
