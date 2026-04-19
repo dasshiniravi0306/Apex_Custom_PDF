@@ -1,0 +1,20 @@
+DECLARE
+  l_blob BLOB;
+  l_filename VARCHAR2(255);
+  l_mime VARCHAR2(128);
+BEGIN
+  SELECT blob_content, filename, mime_type 
+    INTO l_blob, l_filename, l_mime
+    FROM apex_application_temp_files 
+   WHERE name = :P4_PROFILE_PIC; -- Replace with your item name
+
+  INSERT INTO USER_PROFILE_DETAILS (
+        USER_NAME,
+        USER_EMAIL,
+        USER_PHONE_NUMBER,
+        USER_PROFILE,
+        PROFILE_MIME,
+        PROFILE_NAME
+    ) 
+  VALUES (:P4_NAME,:P4_EMAIL,:P4_PHONE_NUMBER,l_blob, l_mime, l_filename);
+END;
